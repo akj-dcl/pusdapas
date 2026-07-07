@@ -4,6 +4,28 @@ import { Head, router } from '@inertiajs/vue3'
 import { ref, watch, computed } from 'vue'
 import { debounce } from 'lodash'
 
+// ── Modal Cetak Rekap Integrasi ──────────────────────────────────
+const showModalCetak = ref(false)
+const today = new Date()
+const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0]
+const cetakDari   = ref(firstDayOfMonth)
+const cetakSampai = ref(today.toISOString().split('T')[0])
+
+function openModalCetak() { showModalCetak.value = true }
+function closeModalCetak() { showModalCetak.value = false }
+
+function bukaCetak() {
+    const url = `/admin/pembinaan/rekap-integrasi?dari=${cetakDari.value}&sampai=${cetakSampai.value}`
+    window.open(url, '_blank')
+    closeModalCetak()
+}
+
+function bukaExcel() {
+    const url = `/admin/pembinaan/rekap-integrasi/export-excel?dari=${cetakDari.value}&sampai=${cetakSampai.value}`
+    window.open(url, '_blank')
+    closeModalCetak()
+}
+
 const props = defineProps<{
     filters: any,
     upts: any[],
@@ -82,7 +104,7 @@ function getOvercrowdedPersen(d: any) {
               <h1 class="text-2xl font-bold tracking-tight text-primary">Dashboard Eksekutif Pembinaan</h1>
               <p class="text-sm text-muted-foreground">Analisis data harian warga binaan pemasyarakatan.</p>
           </div>
-          <div class="flex flex-wrap md:flex-nowrap gap-3 w-full lg:w-auto">
+          <div class="flex flex-wrap md:flex-nowrap gap-3 w-full lg:w-auto items-end">
               <div class="flex-1 md:w-auto">
                   <label class="text-[10px] uppercase font-bold text-muted-foreground block mb-1">Pilih Tanggal</label>
                   <input v-model="tanggal" type="date" class="w-full border rounded-lg px-3 py-2 text-sm bg-background shadow-sm" />
@@ -109,8 +131,93 @@ function getOvercrowdedPersen(d: any) {
                       <option value="integrasi">Data Integrasi</option>
                   </select>
               </div>
+              <!-- Tombol Cetak Rekap Integrasi -->
+              <div class="flex-shrink-0">
+                  <label class="text-[10px] uppercase font-bold text-emerald-700 block mb-1">Cetak</label>
+                  <button
+                      @click="openModalCetak"
+                      class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-sm font-bold px-4 py-2 rounded-lg shadow-md transition-all duration-150 whitespace-nowrap"
+                  >
+                      <span>🖨️</span>
+                      <span>Rekap Integrasi</span>
+                  </button>
+              </div>
           </div>
       </div>
+
+      <!-- Modal Cetak Rekap Integrasi -->
+      <Teleport to="body">
+          <div
+              v-if="showModalCetak"
+              class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+              @click.self="closeModalCetak"
+          >
+              <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 animate-in fade-in zoom-in-95 duration-200">
+                  <!-- Header Modal -->
+                  <div class="flex items-center justify-between mb-5">
+                      <div>
+                          <h3 class="text-lg font-black text-slate-800">🖨️ Cetak Rekap Integrasi</h3>
+                          <p class="text-xs text-slate-500 mt-0.5">Data diambil per-UPT, detail per tanggal</p>
+                      </div>
+                      <button @click="closeModalCetak" class="text-slate-400 hover:text-slate-600 text-xl leading-none transition-colors">&times;</button>
+                  </div>
+
+                  <!-- Form Tanggal -->
+                  <div class="space-y-4">
+                      <div>
+                          <label class="text-xs font-bold text-slate-600 uppercase tracking-wide block mb-1.5">Dari Tanggal</label>
+                          <input
+                              v-model="cetakDari"
+                              type="date"
+                              class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
+                          />
+                      </div>
+                      <div>
+                          <label class="text-xs font-bold text-slate-600 uppercase tracking-wide block mb-1.5">Sampai Tanggal</label>
+                          <input
+                              v-model="cetakSampai"
+                              type="date"
+                              class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
+                          />
+                      </div>
+                  </div>
+
+                  <!-- Preview Info -->
+                  <div class="mt-4 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 text-xs text-emerald-800">
+                      <p class="font-bold mb-1">📋 Yang akan dicetak:</p>
+                      <ul class="space-y-0.5 text-emerald-700">
+                          <li>• Tabel rekap integrasi per-UPT</li>
+                          <li>• Detail baris per tanggal yang ada data</li>
+                          <li>• Subtotal per-UPT &amp; Grand Total Kanwil</li>
+                      </ul>
+                  </div>
+
+                  <!-- Tombol Aksi -->
+                  <div class="flex flex-col gap-2 mt-6">
+                      <div class="grid grid-cols-2 gap-2">
+                          <button
+                              @click="bukaCetak"
+                              :disabled="!cetakDari || !cetakSampai"
+                              class="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2.5 rounded-xl text-sm transition flex items-center justify-center gap-2"
+                          >
+                              <span>🖨️</span> Cetak PDF
+                          </button>
+                          <button
+                              @click="bukaExcel"
+                              :disabled="!cetakDari || !cetakSampai"
+                              class="bg-green-700 hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2.5 rounded-xl text-sm transition flex items-center justify-center gap-2"
+                          >
+                              <span>📊</span> Export Excel
+                          </button>
+                      </div>
+                      <button
+                          @click="closeModalCetak"
+                          class="w-full border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold py-2 rounded-xl text-sm transition"
+                      >Batal</button>
+                  </div>
+              </div>
+          </div>
+      </Teleport>
 
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-card p-5 rounded-2xl shadow-sm border border-l-4 border-l-red-500 hover:shadow-md transition-shadow">

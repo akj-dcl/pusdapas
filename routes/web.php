@@ -148,6 +148,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
     Route::resource('registrasi-detail-tahanans', RegistrasiDetailTahananController::class);
 
     Route::get('/pembinaan/dashboard', [DashboardPembinaanController::class, 'index'])->name('pembinaan.dashboard');
+    Route::get('/pembinaan/rekap-integrasi', [DashboardPembinaanController::class, 'rekapIntegrasi'])->name('pembinaan.rekap-integrasi');
+    Route::get('/pembinaan/rekap-integrasi/export-excel', [DashboardPembinaanController::class, 'exportRekapIntegrasiExcel'])->name('pembinaan.rekap-integrasi.excel');
     Route::get('/tudanumum/dashboard', [DashboardTuController::class, 'index'])->name('dashboard.tu');
 
 });

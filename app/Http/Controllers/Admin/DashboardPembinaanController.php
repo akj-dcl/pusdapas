@@ -12,6 +12,7 @@ use App\Models\DataPemindahan;
 use App\Models\DataPembinaanKepribadian;
 use App\Models\DataPembinaanKemandirian;
 use App\Models\DataIntegrasi;
+use App\Exports\RekapIntegrasiExport;
 
 class DashboardPembinaanController extends Controller
 {
@@ -181,5 +182,156 @@ class DashboardPembinaanController extends Controller
         ], $this->getMasterData());
 
         return Inertia::render('admin/pembinaan/dashboard/Index', $viewData);
+    }
+
+    public function rekapIntegrasi(Request $request)
+    {
+        $user = auth()->user();
+        $isUptUser = !empty($user->upt_id);
+
+        // Ambil parameter tanggal dari query string
+        $dari   = $request->dari   ?? date('Y-m-01'); // default: awal bulan ini
+        $sampai = $request->sampai ?? date('Y-m-d');  // default: hari ini
+
+        // Ambil semua jenis integrasi sebagai kolom
+        $jenisIntegrasis = \App\Models\JenisIntegrasi::orderBy('id')->get();
+
+        // Query data registrasi dalam rentang tanggal
+        $query = \App\Models\DataRegistrasi::with('upt')
+            ->whereBetween('tanggal', [$dari, $sampai])
+            ->orderBy('upt_id')
+            ->orderBy('tanggal');
+
+        // Batasi per-UPT jika user adalah orang UPT
+        if ($isUptUser) {
+            $query->where('upt_id', $user->upt_id);
+        }
+
+        $dataRegistrasi = $query->get();
+
+        // Kelompokkan data per-UPT, lalu per-tanggal
+        $perUpt = [];
+
+        // Inisialisasi semua UPT yang relevan agar UPT tanpa data tetap tampil
+        if ($isUptUser) {
+            $allUpts = \App\Models\Upt::where('id', $user->upt_id)->get();
+        } else {
+            $allUpts = \App\Models\Upt::where('is_active', true)->orderBy('name')->get();
+        }
+
+        foreach ($allUpts as $upt) {
+            $perUpt[$upt->id] = [
+                'upt_id'   => $upt->id,
+                'upt_name' => $upt->name,
+                'rows'     => [],
+                'subtotal' => array_fill_keys($jenisIntegrasis->pluck('id')->toArray(), 0),
+            ];
+        }
+
+        // Isi baris data harian
+        foreach ($dataRegistrasi as $item) {
+            $uptId = $item->upt_id;
+
+            // Jika UPT belum ada di array (edge case), skip
+            if (!isset($perUpt[$uptId])) continue;
+
+            $rekapIntegrasi = $item->rekap_integrasi ?? [];
+            $rowRekap = [];
+
+            foreach ($jenisIntegrasis as $jenis) {
+                $val = isset($rekapIntegrasi[$jenis->id]) ? (int) $rekapIntegrasi[$jenis->id] : 0;
+                $rowRekap[$jenis->id] = $val;
+                $perUpt[$uptId]['subtotal'][$jenis->id] += $val;
+            }
+
+            $perUpt[$uptId]['rows'][] = [
+                'tanggal' => $item->tanggal,
+                'rekap'   => $rowRekap,
+            ];
+        }
+
+        // Hitung grand total dari subtotal semua UPT
+        $grandTotal = array_fill_keys($jenisIntegrasis->pluck('id')->toArray(), 0);
+        foreach ($perUpt as $uptData) {
+            foreach ($jenisIntegrasis as $jenis) {
+                $grandTotal[$jenis->id] += $uptData['subtotal'][$jenis->id] ?? 0;
+            }
+        }
+
+        return Inertia::render('admin/pembinaan/dashboard/RekapIntegrasi', [
+            'dari'            => $dari,
+            'sampai'          => $sampai,
+            'jenis_integrasis' => $jenisIntegrasis,
+            'per_upt'         => array_values($perUpt),
+            'grand_total'     => $grandTotal,
+        ]);
+    }
+
+    public function exportRekapIntegrasiExcel(Request $request)
+    {
+        $user      = auth()->user();
+        $isUptUser = !empty($user->upt_id);
+
+        $dari   = $request->dari   ?? date('Y-m-01');
+        $sampai = $request->sampai ?? date('Y-m-d');
+
+        $jenisIntegrasis = \App\Models\JenisIntegrasi::orderBy('id')->get();
+
+        $query = \App\Models\DataRegistrasi::with('upt')
+            ->whereBetween('tanggal', [$dari, $sampai])
+            ->orderBy('upt_id')
+            ->orderBy('tanggal');
+
+        if ($isUptUser) {
+            $query->where('upt_id', $user->upt_id);
+        }
+
+        $dataRegistrasi = $query->get();
+
+        if ($isUptUser) {
+            $allUpts = Upt::where('id', $user->upt_id)->get();
+        } else {
+            $allUpts = Upt::where('is_active', true)->orderBy('name')->get();
+        }
+
+        $perUpt = [];
+        foreach ($allUpts as $upt) {
+            $perUpt[$upt->id] = [
+                'upt_id'   => $upt->id,
+                'upt_name' => $upt->name,
+                'rows'     => [],
+                'subtotal' => array_fill_keys($jenisIntegrasis->pluck('id')->toArray(), 0),
+            ];
+        }
+
+        foreach ($dataRegistrasi as $item) {
+            $uptId = $item->upt_id;
+            if (!isset($perUpt[$uptId])) continue;
+
+            $rekapIntegrasi = $item->rekap_integrasi ?? [];
+            $rowRekap = [];
+            foreach ($jenisIntegrasis as $jenis) {
+                $val = isset($rekapIntegrasi[$jenis->id]) ? (int) $rekapIntegrasi[$jenis->id] : 0;
+                $rowRekap[$jenis->id] = $val;
+                $perUpt[$uptId]['subtotal'][$jenis->id] += $val;
+            }
+            $perUpt[$uptId]['rows'][] = [
+                'tanggal' => $item->tanggal,
+                'rekap'   => $rowRekap,
+            ];
+        }
+
+        $grandTotal = array_fill_keys($jenisIntegrasis->pluck('id')->toArray(), 0);
+        foreach ($perUpt as $uptData) {
+            foreach ($jenisIntegrasis as $jenis) {
+                $grandTotal[$jenis->id] += $uptData['subtotal'][$jenis->id] ?? 0;
+            }
+        }
+
+        // Konversi ke array biasa agar kompatibel dengan Export class
+        $jenisArray = $jenisIntegrasis->map(fn($j) => ['id' => $j->id, 'nama_integrasi' => $j->nama_integrasi])->toArray();
+        $perUptArray = array_values($perUpt);
+
+        return (new RekapIntegrasiExport($dari, $sampai, $jenisArray, $perUptArray, $grandTotal))->download();
     }
 }
