@@ -132,6 +132,7 @@ function cekKeteranganOverstaying(id: number) {
     }
 }
 
+
 function submit() { form.post('/admin/data-registrasis') }
 </script>
 
