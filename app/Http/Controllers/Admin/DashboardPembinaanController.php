@@ -108,6 +108,7 @@ class DashboardPembinaanController extends Controller
 
                 foreach ($rekapFields as $field) {
                     $aggregated[$field] = [];
+                    $aggregated['breakdown_' . $field] = [];
                 }
 
                 foreach ($dataRegistrasi as $item) {
@@ -144,6 +145,16 @@ class DashboardPembinaanController extends Controller
                                 // Sum untuk Number biasa
                                 elseif (is_numeric($val)) {
                                     $aggregated[$field][$key] = ($aggregated[$field][$key] ?? 0) + $val;
+                                    
+                                    if ($val > 0) {
+                                        if (!isset($aggregated['breakdown_' . $field][$key])) {
+                                            $aggregated['breakdown_' . $field][$key] = [];
+                                        }
+                                        $aggregated['breakdown_' . $field][$key][] = [
+                                            'upt_name' => $item->upt->name ?? 'UPT Tidak Diketahui',
+                                            'jumlah' => $val
+                                        ];
+                                    }
                                 } else {
                                     $aggregated[$field][$key] = $val;
                                 }

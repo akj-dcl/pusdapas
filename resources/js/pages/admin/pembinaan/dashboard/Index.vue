@@ -26,6 +26,26 @@ function bukaExcel() {
     closeModalCetak()
 }
 
+const targetBreakdownNames = ['anak', 'wanita', 'anak bawaan', 'ibu hamil', 'lansia', 'pidana seumur hidup', 'pidana mati'];
+
+function isTargetBreakdown(name: string) {
+    return targetBreakdownNames.includes(name.toLowerCase().trim());
+}
+
+const showModalBreakdown = ref(false);
+const breakdownTitle = ref('');
+const breakdownData = ref<any[]>([]);
+
+function openBreakdown(name: string, data: any[]) {
+    breakdownTitle.value = name;
+    breakdownData.value = data || [];
+    showModalBreakdown.value = true;
+}
+function closeBreakdown() {
+    showModalBreakdown.value = false;
+}
+
+
 const props = defineProps<{
     filters: any,
     upts: any[],
@@ -219,6 +239,37 @@ function getOvercrowdedPersen(d: any) {
           </div>
       </Teleport>
 
+      <!-- Modal Breakdown UPT -->
+      <Teleport to="body">
+          <div
+              v-if="showModalBreakdown"
+              class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+              @click.self="closeBreakdown"
+          >
+              <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 animate-in fade-in zoom-in-95 duration-200">
+                  <div class="flex items-center justify-between mb-5 border-b pb-3">
+                      <div>
+                          <h3 class="text-lg font-black text-slate-800">🔍 Detail {{ breakdownTitle }}</h3>
+                          <p class="text-xs text-slate-500 mt-0.5">Rincian sebaran per-UPT</p>
+                      </div>
+                      <button @click="closeBreakdown" class="text-slate-400 hover:text-slate-600 text-xl leading-none transition-colors">&times;</button>
+                  </div>
+                  
+                  <div class="max-h-[60vh] overflow-y-auto space-y-2 pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full">
+                      <div v-if="breakdownData.length === 0" class="text-center text-sm text-slate-500 py-4 italic">Tidak ada data.</div>
+                      <div v-else v-for="(item, idx) in breakdownData" :key="idx" class="flex justify-between items-center bg-slate-50 border border-slate-100 p-3 rounded-xl shadow-sm">
+                          <span class="text-xs font-bold text-slate-700">{{ item.upt_name }}</span>
+                          <span class="text-xs font-black bg-blue-100 text-blue-700 px-2 py-1 rounded-md">{{ item.jumlah }} Orang</span>
+                      </div>
+                  </div>
+                  
+                  <div class="mt-5 pt-3 border-t">
+                      <button @click="closeBreakdown" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-sm transition">Tutup</button>
+                  </div>
+              </div>
+          </div>
+      </Teleport>
+
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-card p-5 rounded-2xl shadow-sm border border-l-4 border-l-red-500 hover:shadow-md transition-shadow">
               <div class="flex justify-between items-start">
@@ -296,11 +347,18 @@ function getOvercrowdedPersen(d: any) {
                                   <div>
                                       <h4 class="font-bold text-xs text-primary mb-2 border-b pb-1">Data Umum</h4>
                                       <ul class="space-y-1">
-                                          <li v-for="(v, k) in d.rekap_umum" :key="k" class="flex justify-between text-xs">
+                                          <li v-for="(v, k) in d.rekap_umum" :key="k" class="flex justify-between items-center text-xs border-b border-dashed border-slate-100 last:border-0 py-1">
                                               <template v-if="k !== 'detail_wna'">
                                                   <span class="text-muted-foreground">{{ findName(umums, k, 'nama_registrasiumum') }}</span>
                                                   <span v-if="findName(umums, k, 'nama_registrasiumum').toLowerCase().includes('overcrowded')" class="font-bold text-red-600">{{ getOvercrowdedPersen(d) }}</span>
-                                                  <span v-else class="font-bold">{{ v }}</span>
+                                                  <span v-else class="font-bold flex items-center gap-2">
+                                                      {{ v }}
+                                                      <button v-if="(!filters.upt_id && !filters.is_upt_user) && v > 0 && isTargetBreakdown(findName(umums, k, 'nama_registrasiumum'))" 
+                                                              @click="openBreakdown(findName(umums, k, 'nama_registrasiumum'), d.breakdown_rekap_umum?.[k])" 
+                                                              class="text-[9px] bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 transition-colors">
+                                                          <span>🔍</span> Detail
+                                                      </button>
+                                                  </span>
                                               </template>
                                           </li>
                                       </ul>
