@@ -26,7 +26,7 @@ function bukaExcel() {
     closeModalCetak()
 }
 
-const targetBreakdownNames = ['anak', 'wanita', 'anak bawaan', 'ibu hamil', 'lansia', 'pidana seumur hidup', 'pidana mati'];
+const targetBreakdownNames = ['anak', 'wanita', 'anak bawaan', 'ibu hamil', 'lansia', 'pidana seumur hidup', 'pidana mati', 'mt', 'sh'];
 
 function isTargetBreakdown(name: string) {
     return targetBreakdownNames.includes(name.toLowerCase().trim());
@@ -394,7 +394,30 @@ function getOvercrowdedPersen(d: any) {
 
                               <div class="rounded-lg bg-emerald-50/40 p-3 border border-emerald-100">
                                   <h4 class="font-bold text-xs text-emerald-700 mb-2 border-b pb-1">Detail Rekap Napi</h4>
-                                  <ul class="space-y-1"><li v-for="(v, k) in d.rekap_detail_napi" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(detail_napis, k, 'nama_registrasidetailnapi') }}</span><span class="font-bold text-emerald-700">{{ v }}</span></li></ul>
+                                  <ul class="space-y-1">
+                                      <li v-for="(v, k) in d.rekap_detail_napi" :key="k" class="flex justify-between items-center text-xs border-b border-dashed border-emerald-100/50 last:border-0 py-1">
+                                          <span class="text-muted-foreground">
+                                              {{ 
+                                                  findName(detail_napis, k, 'nama_registrasidetailnapi') === 'MT' ? 'MT (Pidana Mati)' : 
+                                                  (findName(detail_napis, k, 'nama_registrasidetailnapi') === 'SH' ? 'SH (Pidana Seumur Hidup)' : 
+                                                  findName(detail_napis, k, 'nama_registrasidetailnapi')) 
+                                              }}
+                                          </span>
+                                          <span class="font-bold flex items-center gap-2 text-emerald-700">
+                                              {{ v }}
+                                              <button v-if="(!filters.upt_id && !filters.is_upt_user) && v > 0 && isTargetBreakdown(findName(detail_napis, k, 'nama_registrasidetailnapi'))" 
+                                                      @click="openBreakdown(
+                                                          findName(detail_napis, k, 'nama_registrasidetailnapi') === 'MT' ? 'MT (Pidana Mati)' : 
+                                                          (findName(detail_napis, k, 'nama_registrasidetailnapi') === 'SH' ? 'SH (Pidana Seumur Hidup)' : 
+                                                          findName(detail_napis, k, 'nama_registrasidetailnapi')), 
+                                                          d.breakdown_rekap_detail_napi?.[k]
+                                                      )" 
+                                                      class="text-[9px] bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 transition-colors">
+                                                  <span>🔍</span> Detail
+                                              </button>
+                                          </span>
+                                      </li>
+                                  </ul>
                               </div>
                               <div class="rounded-lg bg-blue-50/40 p-3 border border-blue-100">
                                   <h4 class="font-bold text-xs text-blue-700 mb-2 border-b pb-1">Detail Rekap Tahanan</h4>
