@@ -26,10 +26,11 @@ function bukaExcel() {
     closeModalCetak()
 }
 
-const targetBreakdownNames = ['anak', 'wanita', 'anak bawaan', 'ibu hamil', 'lansia', 'pidana seumur hidup', 'pidana mati', 'mt', 'sh', 'residivis', 'residivis pidsus', 'residivis pidum'];
+const targetBreakdownNames = ['anak', 'wanita', 'anak bawaan', 'ibu hamil', 'lansia', 'pidana seumur hidup', 'pidana mati', 'mt', 'sh', 'residivis', 'total residivis', 'residivis pidsus', 'residivis pidum'];
 
 function isTargetBreakdown(name: string) {
-    return targetBreakdownNames.includes(name.toLowerCase().trim());
+    const cleanName = name.toLowerCase().trim();
+    return targetBreakdownNames.includes(cleanName) || cleanName.includes('residivis');
 }
 
 const showModalBreakdown = ref(false);
@@ -276,14 +277,7 @@ function getOvercrowdedPersen(d: any) {
                   <p class="text-xs text-muted-foreground font-bold uppercase">Residivis Baru</p>
                   <span class="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-400 text-[10px] px-2 py-0.5 rounded-full font-bold">Hari Ini</span>
               </div>
-              <div class="flex items-baseline justify-between mt-2">
-                  <h2 class="text-3xl font-black text-red-600 dark:text-red-400">{{ highlight.total_residivis }} <span class="text-sm font-medium text-muted-foreground">WBP</span></h2>
-                  <button v-if="(!filters.upt_id && !filters.is_upt_user) && highlight.total_residivis > 0" 
-                          @click="openBreakdown('Residivis Baru', highlight.breakdown_residivis)" 
-                          class="text-[10px] bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-2 py-0.5 rounded shadow-sm flex items-center gap-1 transition-colors dark:bg-red-950/40 dark:text-red-300 dark:border-red-800/80 font-bold">
-                      <span></span> Detail
-                  </button>
-              </div>
+              <h2 class="text-3xl font-black text-red-600 dark:text-red-400 mt-2">{{ highlight.total_residivis }} <span class="text-sm font-medium text-muted-foreground">WBP</span></h2>
           </div>
           <div class="bg-card p-5 rounded-2xl shadow-sm border border-l-4 border-l-emerald-500 hover:shadow-md transition-shadow">
               <div class="flex justify-between items-start">
