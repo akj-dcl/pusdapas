@@ -73,8 +73,16 @@ class DashboardPembinaanController extends Controller
         if ($uptId) $qKemandirian->where('upt_id', $uptId);
         $dataKemandirian = $qKemandirian->get();
 
+        $breakdownResidivis = $dataResidivis->groupBy('upt_id')->map(function ($group) {
+            return [
+                'upt_name' => $group->first()->upt->name ?? 'UPT Tidak Diketahui',
+                'jumlah' => $group->count(),
+            ];
+        })->values()->toArray();
+
         $highlight = [
             'total_residivis' => $dataResidivis->count(),
+            'breakdown_residivis' => $breakdownResidivis,
             'total_pemindahan' => $dataPemindahan->count(),
             'kegiatan_kepribadian' => $dataKepribadian->count(),
             'kegiatan_kemandirian' => $dataKemandirian->count(),

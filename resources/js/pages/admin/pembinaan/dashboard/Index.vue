@@ -26,7 +26,7 @@ function bukaExcel() {
     closeModalCetak()
 }
 
-const targetBreakdownNames = ['anak', 'wanita', 'anak bawaan', 'ibu hamil', 'lansia', 'pidana seumur hidup', 'pidana mati', 'mt', 'sh'];
+const targetBreakdownNames = ['anak', 'wanita', 'anak bawaan', 'ibu hamil', 'lansia', 'pidana seumur hidup', 'pidana mati', 'mt', 'sh', 'residivis', 'residivis pidsus', 'residivis pidum'];
 
 function isTargetBreakdown(name: string) {
     return targetBreakdownNames.includes(name.toLowerCase().trim());
@@ -276,7 +276,14 @@ function getOvercrowdedPersen(d: any) {
                   <p class="text-xs text-muted-foreground font-bold uppercase">Residivis Baru</p>
                   <span class="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-400 text-[10px] px-2 py-0.5 rounded-full font-bold">Hari Ini</span>
               </div>
-              <h2 class="text-3xl font-black text-red-600 dark:text-red-400 mt-2">{{ highlight.total_residivis }} <span class="text-sm font-medium text-muted-foreground">WBP</span></h2>
+              <div class="flex items-baseline justify-between mt-2">
+                  <h2 class="text-3xl font-black text-red-600 dark:text-red-400">{{ highlight.total_residivis }} <span class="text-sm font-medium text-muted-foreground">WBP</span></h2>
+                  <button v-if="(!filters.upt_id && !filters.is_upt_user) && highlight.total_residivis > 0" 
+                          @click="openBreakdown('Residivis Baru', highlight.breakdown_residivis)" 
+                          class="text-[10px] bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-2 py-0.5 rounded shadow-sm flex items-center gap-1 transition-colors dark:bg-red-950/40 dark:text-red-300 dark:border-red-800/80 font-bold">
+                      <span></span> Detail
+                  </button>
+              </div>
           </div>
           <div class="bg-card p-5 rounded-2xl shadow-sm border border-l-4 border-l-emerald-500 hover:shadow-md transition-shadow">
               <div class="flex justify-between items-start">
@@ -356,7 +363,7 @@ function getOvercrowdedPersen(d: any) {
                                                       <button v-if="(!filters.upt_id && !filters.is_upt_user) && v > 0 && isTargetBreakdown(findName(umums, k, 'nama_registrasiumum'))" 
                                                               @click="openBreakdown(findName(umums, k, 'nama_registrasiumum'), d.breakdown_rekap_umum?.[k])" 
                                                               class="text-[9px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:bg-blue-900/50 border border-blue-200 dark:border-blue-800/50 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 transition-colors">
-                                                          <span>🔍</span> Detail
+                                                          <span></span> Detail
                                                       </button>
                                                   </span>
                                               </template>
@@ -413,7 +420,7 @@ function getOvercrowdedPersen(d: any) {
                                                           d.breakdown_rekap_detail_napi?.[k]
                                                       )" 
                                                       class="text-[9px] bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800/50 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 transition-colors">
-                                                  <span>🔍</span> Detail
+                                                  <span></span> Detail
                                               </button>
                                           </span>
                                       </li>
@@ -429,13 +436,37 @@ function getOvercrowdedPersen(d: any) {
                                   <div class="grid md:grid-cols-2 gap-4 flex-1">
                                       <div>
                                           <h4 class="font-bold text-xs text-red-600 dark:text-red-400 mb-2">Pidsus</h4>
-                                          <ul class="space-y-1"><li v-for="(v, k) in d.rekap_pidsus" :key="k" class="flex justify-between text-[10px]"><span class="text-muted-foreground">{{ findName(pidsuses, k, 'nama_registrasipidsus') }}</span><span class="font-bold">{{ v }}</span></li></ul>
-                                          <div class="mt-2 p-1 rounded border text-[10px] font-bold text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/30 flex justify-between"><span>Sub-Total Pidsus:</span><span>{{ getTotalPidsus(d) }}</span></div>
+                                          <ul class="space-y-1">
+                                              <li v-for="(v, k) in d.rekap_pidsus" :key="k" class="flex justify-between items-center text-[10px] py-0.5">
+                                                  <span class="text-muted-foreground">{{ findName(pidsuses, k, 'nama_registrasipidsus') }}</span>
+                                                  <span class="font-bold flex items-center gap-1.5">
+                                                      {{ v }}
+                                                      <button v-if="(!filters.upt_id && !filters.is_upt_user) && v > 0 && isTargetBreakdown(findName(pidsuses, k, 'nama_registrasipidsus'))" 
+                                                              @click="openBreakdown('Pidsus - ' + findName(pidsuses, k, 'nama_registrasipidsus'), d.breakdown_rekap_pidsus?.[k])" 
+                                                              class="text-[9px] bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 transition-colors dark:bg-red-950/40 dark:text-red-300 dark:border-red-800">
+                                                          <span></span> Detail
+                                                      </button>
+                                                  </span>
+                                              </li>
+                                          </ul>
+                                          <div class="mt-2 p-1 rounded border border-red-100 dark:border-red-900/50 text-[10px] font-bold text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/30 flex justify-between"><span>Sub-Total Pidsus:</span><span>{{ getTotalPidsus(d) }}</span></div>
                                       </div>
                                       <div>
                                           <h4 class="font-bold text-xs text-orange-600 dark:text-orange-400 mb-2">Pidum</h4>
-                                          <ul class="space-y-1"><li v-for="(v, k) in d.rekap_pidum" :key="k" class="flex justify-between text-[10px]"><span class="text-muted-foreground">{{ findName(pidums, k, 'nama_registrasipidum') }}</span><span class="font-bold">{{ v }}</span></li></ul>
-                                          <div class="mt-2 p-1 rounded border text-[10px] font-bold text-orange-700 dark:text-orange-400 bg-orange-50 flex justify-between"><span>Sub-Total Pidum:</span><span>{{ getTotalPidum(d) }}</span></div>
+                                          <ul class="space-y-1">
+                                              <li v-for="(v, k) in d.rekap_pidum" :key="k" class="flex justify-between items-center text-[10px] py-0.5">
+                                                  <span class="text-muted-foreground">{{ findName(pidums, k, 'nama_registrasipidum') }}</span>
+                                                  <span class="font-bold flex items-center gap-1.5">
+                                                      {{ v }}
+                                                      <button v-if="(!filters.upt_id && !filters.is_upt_user) && v > 0 && isTargetBreakdown(findName(pidums, k, 'nama_registrasipidum'))" 
+                                                              @click="openBreakdown('Pidum - ' + findName(pidums, k, 'nama_registrasipidum'), d.breakdown_rekap_pidum?.[k])" 
+                                                              class="text-[9px] bg-orange-50 text-orange-600 hover:bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 transition-colors dark:bg-orange-950/40 dark:text-orange-300 dark:border-orange-800">
+                                                          <span></span> Detail
+                                                      </button>
+                                                  </span>
+                                              </li>
+                                          </ul>
+                                          <div class="mt-2 p-1 rounded border border-orange-100 dark:border-orange-900/50 text-[10px] font-bold text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 flex justify-between"><span>Sub-Total Pidum:</span><span>{{ getTotalPidum(d) }}</span></div>
                                       </div>
                                   </div>
 

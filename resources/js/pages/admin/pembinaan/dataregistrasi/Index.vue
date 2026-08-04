@@ -119,7 +119,7 @@ const totalPidsusPidumDetail = computed(() => totalPidsusDetail.value + totalPid
               <td class="p-4">{{ d.upt?.name ?? '-' }}</td>
               <td class="p-4 text-right">
                 <div class="flex justify-end gap-2">
-                  <button type="button" @click="showDetail(d)" class="border px-3 h-8 rounded-md text-xs font-medium hover:bg-blue-50 hover:text-blue-600">Lihat Detail</button>
+                  <button type="button" @click="showDetail(d)" class="border px-3 h-8 rounded-md text-xs font-medium hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Lihat Detail</button>
                   <Link :href="`/admin/data-registrasis/${d.id}/edit`" class="border px-3 h-8 rounded-md text-xs font-medium hover:bg-accent">Edit</Link>
                   <button type="button" @click="destroyData(d.id)" class="bg-destructive text-white px-3 h-8 rounded-md text-xs font-medium">Hapus</button>
                 </div>
@@ -140,8 +140,8 @@ const totalPidsusPidumDetail = computed(() => totalPidsusDetail.value + totalPid
           </div>
           
           <div class="flex bg-muted p-1 rounded-lg border">
-              <button @click="activeTab = 'registrasi'" :class="activeTab === 'registrasi' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all">📊 Rekap Registrasi Utama</button>
-              <button @click="activeTab = 'kunjungan'" :class="activeTab === 'kunjungan' ? 'bg-background text-orange-700 shadow-sm' : 'text-muted-foreground hover:text-orange-600'" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all">📋 Laporan Kunjungan Harian</button>
+              <button @click="activeTab = 'registrasi'" :class="activeTab === 'registrasi' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all">📊 Rekap Registrasi Utama</button>
+              <button @click="activeTab = 'kunjungan'" :class="activeTab === 'kunjungan' ? 'bg-background text-orange-700 dark:text-orange-400 shadow-sm' : 'text-muted-foreground hover:text-orange-600 dark:hover:text-orange-400'" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all">📋 Laporan Kunjungan Harian</button>
           </div>
         </div>
 
@@ -153,74 +153,74 @@ const totalPidsusPidumDetail = computed(() => totalPidsusDetail.value + totalPid
                         <li v-for="(v, k) in selectedData.rekap_umum" :key="k" class="flex justify-between text-xs">
                             <template v-if="k !== 'detail_wna'">
                                 <span class="text-muted-foreground">{{ findName(umums, k, 'nama_registrasiumum') }}</span>
-                                <span class="font-bold" :class="findName(umums, k, 'nama_registrasiumum').toLowerCase().includes('overcrowded') ? 'text-red-600':''">{{ v }}</span>
+                                <span class="font-bold" :class="findName(umums, k, 'nama_registrasiumum').toLowerCase().includes('overcrowded') ? 'text-red-600 dark:text-red-400':''">{{ v }}</span>
                             </template>
                         </li>
                     </ul>
                 </div>
                 
-                <div v-if="selectedData.rekap_umum['detail_wna'] && selectedData.rekap_umum['detail_wna'].length > 0" class="mt-3 p-2 bg-blue-50 rounded border border-blue-100 text-[11px]">
-                    <p class="font-bold text-blue-800 mb-1">🌐 Rincian Kewarganegaraan WNA:</p>
-                    <div v-for="(wna, i) in selectedData.rekap_umum['detail_wna']" :key="i" class="flex justify-between text-[10px] bg-white px-2 py-0.5 rounded mb-1 border">
-                        <span class="font-semibold text-slate-700">{{ wna.negara }}</span>
-                        <span class="font-bold bg-blue-100 px-1 rounded text-blue-800">{{ wna.status }}</span>
+                <div v-if="selectedData.rekap_umum['detail_wna'] && selectedData.rekap_umum['detail_wna'].length > 0" class="mt-3 p-2 bg-blue-50/50 dark:bg-blue-900/20 rounded border border-blue-100 dark:border-blue-900/50 text-[11px]">
+                    <p class="font-bold text-blue-800 dark:text-blue-300 mb-1">🌐 Rincian Kewarganegaraan WNA:</p>
+                    <div v-for="(wna, i) in selectedData.rekap_umum['detail_wna']" :key="i" class="flex justify-between text-[10px] bg-card text-card-foreground px-2 py-0.5 rounded mb-1 border border-border shadow-sm">
+                        <span class="font-semibold text-slate-700 dark:text-slate-300">{{ wna.negara }}</span>
+                        <span class="font-bold bg-blue-100 dark:bg-blue-800/50 px-1.5 rounded text-blue-800 dark:text-blue-300">{{ wna.status }}</span>
                     </div>
                 </div>
             </div>
 
-            <div class="rounded-lg bg-purple-50/40 p-3 border border-purple-100 flex flex-col justify-between">
+            <div class="rounded-lg bg-purple-50/40 dark:bg-purple-900/20 p-3 border border-purple-100 dark:border-purple-900/50 flex flex-col justify-between">
                 <div>
-                    <h4 class="font-bold text-xs text-purple-700 mb-2 border-b pb-1">Tingkat Pendidikan</h4>
-                    <ul class="space-y-1"><li v-for="(v, k) in selectedData.rekap_pendidikan" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(pendidikans, k, 'nama_registrasipendidikan') }}</span><span class="font-bold text-purple-700">{{ v }}</span></li></ul>
+                    <h4 class="font-bold text-xs text-purple-700 dark:text-purple-400 mb-2 border-b pb-1">Tingkat Pendidikan</h4>
+                    <ul class="space-y-1"><li v-for="(v, k) in selectedData.rekap_pendidikan" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(pendidikans, k, 'nama_registrasipendidikan') }}</span><span class="font-bold text-purple-700 dark:text-purple-400">{{ v }}</span></li></ul>
                 </div>
-                <div class="mt-2 p-1.5 rounded border text-[10px] font-bold flex justify-between" :class="objTotal(selectedData.rekap_pendidikan) === totalIsiDetail ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-red-50 border-red-100 text-red-700'">
+                <div class="mt-2 p-1.5 rounded border text-[10px] font-bold flex justify-between" :class="objTotal(selectedData.rekap_pendidikan) === totalIsiDetail ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-900/30 border-red-100 dark:border-red-800/50 text-red-700 dark:text-red-400'">
                     <span>Total: {{ objTotal(selectedData.rekap_pendidikan) }}</span>
                     <span v-if="objTotal(selectedData.rekap_pendidikan) !== totalIsiDetail">⚠️ Selisih: {{ Math.abs(objTotal(selectedData.rekap_pendidikan) - totalIsiDetail) }}</span>
                     <span v-else>✅ Sesuai Total Isi</span>
                 </div>
             </div>
 
-            <div class="rounded-lg bg-emerald-50/40 p-3 border border-emerald-100">
-                <h4 class="font-bold text-xs text-emerald-700 mb-2 border-b pb-1">Detail Rekap Napi</h4>
-                <ul class="space-y-1"><li v-for="(v, k) in selectedData.rekap_detail_napi" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(detail_napis, k, 'nama_registrasidetailnapi') }}</span><span class="font-bold text-emerald-700">{{ v }}</span></li></ul>
+            <div class="rounded-lg bg-emerald-50/40 dark:bg-emerald-900/20 p-3 border border-emerald-100 dark:border-emerald-900/50">
+                <h4 class="font-bold text-xs text-emerald-700 dark:text-emerald-400 mb-2 border-b pb-1">Detail Rekap Napi</h4>
+                <ul class="space-y-1"><li v-for="(v, k) in selectedData.rekap_detail_napi" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(detail_napis, k, 'nama_registrasidetailnapi') }}</span><span class="font-bold text-emerald-700 dark:text-emerald-400">{{ v }}</span></li></ul>
             </div>
             
-            <div class="rounded-lg bg-blue-50/40 p-3 border border-blue-100">
-                <h4 class="font-bold text-xs text-blue-700 mb-2 border-b pb-1">Detail Rekap Tahanan</h4>
-                <ul class="space-y-1"><li v-for="(v, k) in selectedData.rekap_detail_tahanan" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(detail_tahanans, k, 'nama_registrasidetailtahanan') }}</span><span class="font-bold text-blue-700">{{ v }}</span></li></ul>
+            <div class="rounded-lg bg-blue-50/40 dark:bg-blue-900/20 p-3 border border-blue-100 dark:border-blue-900/50">
+                <h4 class="font-bold text-xs text-blue-700 dark:text-blue-400 mb-2 border-b pb-1">Detail Rekap Tahanan</h4>
+                <ul class="space-y-1"><li v-for="(v, k) in selectedData.rekap_detail_tahanan" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(detail_tahanans, k, 'nama_registrasidetailtahanan') }}</span><span class="font-bold text-blue-700 dark:text-blue-400">{{ v }}</span></li></ul>
             </div>
             
             <div class="rounded-xl border bg-card p-3 shadow-sm flex flex-col md:col-span-2 xl:col-span-2">
                 <h3 class="font-bold text-xs mb-3 border-b pb-2 text-primary">Rekapitulasi Tindak Pidana</h3>
                 <div class="grid md:grid-cols-2 gap-4 flex-1">
                     <div>
-                        <h4 class="font-bold text-xs text-red-600 mb-2">Pidsus</h4>
+                        <h4 class="font-bold text-xs text-red-600 dark:text-red-400 mb-2">Pidsus</h4>
                         <ul class="space-y-1">
                             <li v-for="(v, k) in selectedData.rekap_pidsus" :key="k" class="flex justify-between text-[10px]">
                                 <span class="text-muted-foreground">{{ findName(pidsuses, k, 'nama_registrasipidsus') }}</span>
                                 <span class="font-bold">{{ v }}</span>
                             </li>
                         </ul>
-                        <div class="mt-2 p-1 rounded border text-[10px] font-bold text-red-700 bg-red-50 flex justify-between">
+                        <div class="mt-2 p-1 rounded border border-red-100 dark:border-red-900/50 text-[10px] font-bold text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/30 flex justify-between">
                             <span>Sub-Total Pidsus:</span><span>{{ totalPidsusDetail }}</span>
                         </div>
                     </div>
 
                     <div>
-                        <h4 class="font-bold text-xs text-orange-600 mb-2">Pidum</h4>
+                        <h4 class="font-bold text-xs text-orange-600 dark:text-orange-400 mb-2">Pidum</h4>
                         <ul class="space-y-1">
                             <li v-for="(v, k) in selectedData.rekap_pidum" :key="k" class="flex justify-between text-[10px]">
                                 <span class="text-muted-foreground">{{ findName(pidums, k, 'nama_registrasipidum') }}</span>
                                 <span class="font-bold">{{ v }}</span>
                             </li>
                         </ul>
-                        <div class="mt-2 p-1 rounded border text-[10px] font-bold text-orange-700 bg-orange-50 flex justify-between">
+                        <div class="mt-2 p-1 rounded border border-orange-100 dark:border-orange-900/50 text-[10px] font-bold text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 flex justify-between">
                             <span>Sub-Total Pidum:</span><span>{{ totalPidumDetail }}</span>
                         </div>
                     </div>
                 </div>
 
-                <div :class="totalPidsusPidumDetail === totalIsiDetail ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-red-50 border-red-100 text-red-700'" class="mt-3 p-1.5 rounded border text-[10px] font-bold flex flex-col transition-colors">
+                <div :class="totalPidsusPidumDetail === totalIsiDetail ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-900/30 border-red-100 dark:border-red-800/50 text-red-700 dark:text-red-400'" class="mt-3 p-1.5 rounded border text-[10px] font-bold flex flex-col transition-colors">
                     <div class="flex justify-between">
                         <span>Total Pidsus + Pidum (Tanpa Residivis): {{ totalPidsusPidumDetail }}</span>
                         <span v-if="totalPidsusPidumDetail === totalIsiDetail">✅ Sesuai Total Isi</span>
@@ -230,33 +230,33 @@ const totalPidsusPidumDetail = computed(() => totalPidsusDetail.value + totalPid
             </div>
 
             <div class="rounded-lg bg-card border p-3">
-                <h4 class="font-bold text-xs text-amber-600 mb-2 border-b pb-1">Overstaying</h4>
+                <h4 class="font-bold text-xs text-amber-600 dark:text-amber-500 mb-2 border-b pb-1">Overstaying</h4>
                 <ul class="space-y-2">
-                    <li v-for="(v, k) in selectedData.rekap_overstaying" :key="k" class="flex flex-col text-xs border-b border-amber-50 pb-1 mb-1 last:border-0">
+                    <li v-for="(v, k) in selectedData.rekap_overstaying" :key="k" class="flex flex-col text-xs border-b border-amber-50 dark:border-amber-900/30 pb-1 mb-1 last:border-0">
                         <div class="flex justify-between items-center">
                             <span class="text-muted-foreground">{{ findName(overstayings, k, 'nama_registrasioverstaying') }}</span>
-                            <span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded">{{ typeof v === 'object' && v !== null ? v.jumlah : v }}</span>
+                            <span class="font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded">{{ typeof v === 'object' && v !== null ? v.jumlah : v }}</span>
                         </div>
-                        <div v-if="typeof v === 'object' && v !== null && v.jumlah > 0" class="mt-1 text-[10px] text-amber-700 font-medium bg-amber-100/50 p-1.5 rounded border border-amber-200/50">
+                        <div v-if="typeof v === 'object' && v !== null && v.jumlah > 0" class="mt-1 text-[10px] text-amber-700 dark:text-amber-300 font-medium bg-amber-100/50 dark:bg-amber-900/40 p-1.5 rounded border border-amber-200/50 dark:border-amber-800/50">
                             Ket: {{ v.keterangan }}
                         </div>
                     </li>
                 </ul>
             </div>
 
-            <div class="rounded-lg bg-card border p-3"><h4 class="font-bold text-xs text-emerald-600 mb-2 border-b pb-1">Integrasi</h4><ul class="space-y-1"><li v-for="(v, k) in selectedData.rekap_integrasi" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(integrasis, k, 'nama_integrasi') }}</span><span class="font-bold">{{ v }}</span></li></ul></div>
+            <div class="rounded-lg bg-card border p-3"><h4 class="font-bold text-xs text-emerald-600 dark:text-emerald-400 mb-2 border-b pb-1">Integrasi</h4><ul class="space-y-1"><li v-for="(v, k) in selectedData.rekap_integrasi" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(integrasis, k, 'nama_integrasi') }}</span><span class="font-bold">{{ v }}</span></li></ul></div>
             
             <div class="rounded-lg bg-card border p-3 flex flex-col justify-between">
                 <div>
-                    <h4 class="font-bold text-xs text-blue-600 mb-2 border-b pb-1">Kependudukan</h4>
+                    <h4 class="font-bold text-xs text-blue-600 dark:text-blue-400 mb-2 border-b pb-1">Kependudukan</h4>
                     <ul class="space-y-1"><li v-for="(v, k) in selectedData.rekap_identitas" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(identitases, k, 'nama_registrasiidentitas') }}</span><span class="font-bold">{{ v }}</span></li></ul>
                 </div>
                 <div>
-                    <div :class="totalNikDetail === totalIsiDetail ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-red-50 border-red-100 text-red-700'" class="mt-2 p-1.5 rounded border text-[10px] font-bold flex justify-between items-center transition-colors">
+                    <div :class="totalNikDetail === totalIsiDetail ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-900/30 border-red-100 dark:border-red-800/50 text-red-700 dark:text-red-400'" class="mt-2 p-1.5 rounded border text-[10px] font-bold flex justify-between items-center transition-colors">
                         <span>Total NIK: {{ totalNikDetail }}</span>
                         <span v-if="totalNikDetail !== totalIsiDetail">⚠️ Selisih: {{ Math.abs(totalNikDetail - totalIsiDetail) }}</span><span v-else>✅ Sesuai</span>
                     </div>
-                    <div :class="totalKtpDetail === totalIsiDetail ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-red-50 border-red-100 text-red-700'" class="mt-1.5 p-1.5 rounded border text-[10px] font-bold flex justify-between items-center transition-colors">
+                    <div :class="totalKtpDetail === totalIsiDetail ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-900/30 border-red-100 dark:border-red-800/50 text-red-700 dark:text-red-400'" class="mt-1.5 p-1.5 rounded border text-[10px] font-bold flex justify-between items-center transition-colors">
                         <span>Total KTP: {{ totalKtpDetail }}</span>
                         <span v-if="totalKtpDetail !== totalIsiDetail">⚠️ Selisih: {{ Math.abs(totalKtpDetail - totalIsiDetail) }}</span><span v-else>✅ Sesuai</span>
                     </div>
@@ -265,26 +265,26 @@ const totalPidsusPidumDetail = computed(() => totalPidsusDetail.value + totalPid
 
             <div class="rounded-lg bg-card border p-3 flex flex-col justify-between">
                 <div>
-                    <h4 class="font-bold text-xs text-indigo-600 mb-2 border-b pb-1">Agama</h4>
+                    <h4 class="font-bold text-xs text-indigo-600 dark:text-indigo-400 mb-2 border-b pb-1">Agama</h4>
                     <ul class="space-y-1"><li v-for="(v, k) in selectedData.rekap_agama" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(agamas, k, 'nama_agama') }}</span><span class="font-bold">{{ v }}</span></li></ul>
                 </div>
-                <div :class="objTotal(selectedData.rekap_agama) === totalIsiDetail ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-red-50 border-red-100 text-red-700'" class="mt-2 p-1.5 rounded border text-[10px] font-bold flex justify-between items-center transition-colors">
+                <div :class="objTotal(selectedData.rekap_agama) === totalIsiDetail ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-900/30 border-red-100 dark:border-red-800/50 text-red-700 dark:text-red-400'" class="mt-2 p-1.5 rounded border text-[10px] font-bold flex justify-between items-center transition-colors">
                     <span>Total: {{ objTotal(selectedData.rekap_agama) }}</span>
                     <span v-if="objTotal(selectedData.rekap_agama) !== totalIsiDetail">⚠️ Selisih: {{ Math.abs(objTotal(selectedData.rekap_agama) - totalIsiDetail) }}</span>
                     <span v-else>✅ Sesuai Total Isi</span>
                 </div>
             </div>
 
-            <div class="rounded-lg bg-card border p-3"><h4 class="font-bold text-xs text-teal-600 mb-2 border-b pb-1">Pengeluaran</h4><ul class="space-y-1"><li v-for="(v, k) in selectedData.rekap_pengeluaran" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(pengeluarans, k, 'nama_pengeluaran') }}</span><span class="font-bold">{{ v }}</span></li></ul></div>
+            <div class="rounded-lg bg-card border p-3"><h4 class="font-bold text-xs text-teal-600 dark:text-teal-400 mb-2 border-b pb-1">Pengeluaran</h4><ul class="space-y-1"><li v-for="(v, k) in selectedData.rekap_pengeluaran" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(pengeluarans, k, 'nama_pengeluaran') }}</span><span class="font-bold">{{ v }}</span></li></ul></div>
         </div>
 
         <div v-if="selectedData && activeTab === 'kunjungan'" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 animate-fadeIn">
-            <div class="rounded-xl bg-orange-50/30 p-4 border border-orange-100 shadow-sm"><h4 class="font-bold text-xs text-orange-700 mb-3 border-b border-orange-200 pb-1">Daftar Petugas Jaga</h4><ul class="space-y-1.5"><li v-for="(v, k) in selectedData.rekap_petugas" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(petugases, k, 'nama_registrasipetugas') }}</span><span class="font-black text-orange-800 bg-white px-2 py-0.5 rounded shadow-sm">{{ v }}</span></li></ul></div>
-            <div class="rounded-xl bg-orange-50/30 p-4 border border-orange-100 shadow-sm"><h4 class="font-bold text-xs text-orange-700 mb-3 border-b border-orange-200 pb-1">Daftar Pengunjung</h4><ul class="space-y-1.5"><li v-for="(v, k) in selectedData.rekap_pengunjung" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(pengunjungs, k, 'nama_registrasipengunjung') }}</span><span class="font-black text-orange-800 bg-white px-2 py-0.5 rounded shadow-sm">{{ v }}</span></li></ul></div>
-            <div class="rounded-xl bg-orange-50/30 p-4 border border-orange-100 shadow-sm"><h4 class="font-bold text-xs text-orange-700 mb-3 border-b border-orange-200 pb-1">WBP Yang Dikunjungi</h4><ul class="space-y-1.5"><li v-for="(v, k) in selectedData.rekap_wbp_dikunjungi" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(wbp_dikunjungis, k, 'nama_registrasiwbpdikunjungi') }}</span><span class="font-black text-orange-800 bg-white px-2 py-0.5 rounded shadow-sm">{{ v }}</span></li></ul></div>
-            <div class="rounded-xl bg-orange-50/30 p-4 border border-orange-100 shadow-sm"><h4 class="font-bold text-xs text-orange-700 mb-3 border-b border-orange-200 pb-1">Layanan Video Call</h4><ul class="space-y-1.5"><li v-for="(v, k) in selectedData.rekap_wbp_vidcall" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(wbp_vidcalls, k, 'nama_registrasiwbpvidcall') }}</span><span class="font-black text-orange-800 bg-white px-2 py-0.5 rounded shadow-sm">{{ v }}</span></li></ul></div>
-            <div class="rounded-xl bg-orange-50/30 p-4 border border-orange-100 shadow-sm"><h4 class="font-bold text-xs text-orange-700 mb-3 border-b border-orange-200 pb-1">Layanan Wartel</h4><ul class="space-y-1.5"><li v-for="(v, k) in selectedData.rekap_wbp_wartel" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(wbp_wartels, k, 'nama_registrasiwbpwartel') }}</span><span class="font-black text-orange-800 bg-white px-2 py-0.5 rounded shadow-sm">{{ v }}</span></li></ul></div>
-            <div class="rounded-xl bg-orange-50/30 p-4 border border-orange-100 shadow-sm"><h4 class="font-bold text-xs text-orange-700 mb-3 border-b border-orange-200 pb-1">Barang Titipan</h4><ul class="space-y-1.5"><li v-for="(v, k) in selectedData.rekap_barang_titipan" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(barang_titipans, k, 'nama_registrasibarangtitipan') }}</span><span class="font-black text-orange-800 bg-white px-2 py-0.5 rounded shadow-sm">{{ v }}</span></li></ul></div>
+            <div class="rounded-xl bg-orange-50/30 dark:bg-orange-950/20 p-4 border border-orange-100 dark:border-orange-900/40 shadow-sm"><h4 class="font-bold text-xs text-orange-700 dark:text-orange-400 mb-3 border-b border-orange-200 dark:border-orange-900/50 pb-1">Daftar Petugas Jaga</h4><ul class="space-y-1.5"><li v-for="(v, k) in selectedData.rekap_petugas" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(petugases, k, 'nama_registrasipetugas') }}</span><span class="font-black text-orange-800 dark:text-orange-300 bg-card px-2 py-0.5 rounded border border-border shadow-sm">{{ v }}</span></li></ul></div>
+            <div class="rounded-xl bg-orange-50/30 dark:bg-orange-950/20 p-4 border border-orange-100 dark:border-orange-900/40 shadow-sm"><h4 class="font-bold text-xs text-orange-700 dark:text-orange-400 mb-3 border-b border-orange-200 dark:border-orange-900/50 pb-1">Daftar Pengunjung</h4><ul class="space-y-1.5"><li v-for="(v, k) in selectedData.rekap_pengunjung" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(pengunjungs, k, 'nama_registrasipengunjung') }}</span><span class="font-black text-orange-800 dark:text-orange-300 bg-card px-2 py-0.5 rounded border border-border shadow-sm">{{ v }}</span></li></ul></div>
+            <div class="rounded-xl bg-orange-50/30 dark:bg-orange-950/20 p-4 border border-orange-100 dark:border-orange-900/40 shadow-sm"><h4 class="font-bold text-xs text-orange-700 dark:text-orange-400 mb-3 border-b border-orange-200 dark:border-orange-900/50 pb-1">WBP Yang Dikunjungi</h4><ul class="space-y-1.5"><li v-for="(v, k) in selectedData.rekap_wbp_dikunjungi" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(wbp_dikunjungis, k, 'nama_registrasiwbpdikunjungi') }}</span><span class="font-black text-orange-800 dark:text-orange-300 bg-card px-2 py-0.5 rounded border border-border shadow-sm">{{ v }}</span></li></ul></div>
+            <div class="rounded-xl bg-orange-50/30 dark:bg-orange-950/20 p-4 border border-orange-100 dark:border-orange-900/40 shadow-sm"><h4 class="font-bold text-xs text-orange-700 dark:text-orange-400 mb-3 border-b border-orange-200 dark:border-orange-900/50 pb-1">Layanan Video Call</h4><ul class="space-y-1.5"><li v-for="(v, k) in selectedData.rekap_wbp_vidcall" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(wbp_vidcalls, k, 'nama_registrasiwbpvidcall') }}</span><span class="font-black text-orange-800 dark:text-orange-300 bg-card px-2 py-0.5 rounded border border-border shadow-sm">{{ v }}</span></li></ul></div>
+            <div class="rounded-xl bg-orange-50/30 dark:bg-orange-950/20 p-4 border border-orange-100 dark:border-orange-900/40 shadow-sm"><h4 class="font-bold text-xs text-orange-700 dark:text-orange-400 mb-3 border-b border-orange-200 dark:border-orange-900/50 pb-1">Layanan Wartel</h4><ul class="space-y-1.5"><li v-for="(v, k) in selectedData.rekap_wbp_wartel" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(wbp_wartels, k, 'nama_registrasiwbpwartel') }}</span><span class="font-black text-orange-800 dark:text-orange-300 bg-card px-2 py-0.5 rounded border border-border shadow-sm">{{ v }}</span></li></ul></div>
+            <div class="rounded-xl bg-orange-50/30 dark:bg-orange-950/20 p-4 border border-orange-100 dark:border-orange-900/40 shadow-sm"><h4 class="font-bold text-xs text-orange-700 dark:text-orange-400 mb-3 border-b border-orange-200 dark:border-orange-900/50 pb-1">Barang Titipan</h4><ul class="space-y-1.5"><li v-for="(v, k) in selectedData.rekap_barang_titipan" :key="k" class="flex justify-between text-xs"><span class="text-muted-foreground">{{ findName(barang_titipans, k, 'nama_registrasibarangtitipan') }}</span><span class="font-black text-orange-800 dark:text-orange-300 bg-card px-2 py-0.5 rounded border border-border shadow-sm">{{ v }}</span></li></ul></div>
         </div>
 
         <div class="mt-6 flex justify-end pt-4 border-t bg-card"><button @click="closeModal" class="rounded-lg bg-secondary px-6 py-2 text-sm font-medium">Tutup Berkas</button></div>
